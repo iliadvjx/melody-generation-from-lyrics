@@ -236,7 +236,7 @@ def main():
     logger.info("Using {} device".format(device))
 
     # Dataloader params
-    data_params = {'batch_size': 2000,
+    data_params = {'batch_size': 20000,
                    'shuffle': True,
                    'num_workers': 4}
     logger.info("Data Parameters used are: {}".format(data_params))
@@ -250,7 +250,7 @@ def main():
 
     # Training params
     start_epoch = 0
-    epochs = 50
+    epochs = 1000
     loss_threshold = 0.001
     learning_rate = 0.001
     logger.info("Training Parameters are: Epochs-{}, LossThreshold-{}, LearningRate-{}".format(epochs, loss_threshold, learning_rate))
