@@ -12,7 +12,7 @@ import torch.optim as optim
 from torch.utils import data
 import json
 
-import src.utils.logger as logger
+import utils.logger as logger
 
 
 class Dataloader(data.Dataset):
@@ -355,38 +355,38 @@ def train_conditional_gan(train_data_iterator, generator, discriminator, optimiz
 
         print("Loss while training generator is: {}".format(total_G_loss))
 
-        # logger.info("Loss is : {}".format(total_loss))
-        #
-        # if (epoch + 1) % print_every == 0:
-        #     print("Loss is : {}".format(total_loss))
+        logger.info("Loss is : {}".format(total_loss))
+        
+        if (epoch + 1) % print_every == 0:
+            print("Loss is : {}".format(total_loss))
 
-        # if (epoch + 1) % save_every == 0:
-        #     loss_change = prev_loss - total_loss
-        #     logger.info(
-        #         "Change in loss after {} epochs is: {}".format(save_every,
-        #                                                        loss_change))
-        #     if loss_change > 0:
-        #         is_best = True
-        #     if loss_change < loss_threshold:
-        #         to_break = True
-        #
-        #     prev_loss = total_loss
-        #
-        #     logger.info("Creating checkpoint at epoch {}".format(epoch + 1))
-        #     checkpoint = {
-        #         'epoch': epoch + 1,
-        #         'state_dict': model.state_dict(),
-        #         'optimizer': optimizer.state_dict()
-        #     }
-        #     save_checkpoint(checkpoint, is_best, checkpoint_dir, model_dir)
-        #     logger.info("Checkpoint created")
+        if (epoch + 1) % save_every == 0:
+            loss_change = prev_loss - total_loss
+            logger.info(
+                "Change in loss after {} epochs is: {}".format(save_every,
+                                                               loss_change))
+            if loss_change > 0:
+                is_best = True
+            if loss_change < loss_threshold:
+                to_break = True
+        
+            prev_loss = total_loss
+        
+            logger.info("Creating checkpoint at epoch {}".format(epoch + 1))
+            checkpoint = {
+                'epoch': epoch + 1,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict()
+            }
+            save_checkpoint(checkpoint, is_best, checkpoint_dir, model_dir)
+            logger.info("Checkpoint created")
 
-        # if to_break:
-        #     logger.info(
-        #         "Change in loss is less than the threshold. Stopping training")
-        #     break
+        if to_break:
+            logger.info(
+                "Change in loss is less than the threshold. Stopping training")
+            break
 
-#     logger.info("Completed Training")
+    logger.info("Completed Training")
 
 
 if __name__ == '__main__':
@@ -405,7 +405,7 @@ if __name__ == '__main__':
     learning_rate_D = 0.0001
 
     sequence_len = 20 
-    training_set = Dataloader('2019-10-01_embeddings_vector.pt', '2019-10-01_vocabulary_lookup.json', sequence_len)
+    training_set = Dataloader('2024-09-05_embeddings_vector.pt', '2024-09-05_vocabulary_lookup.json', sequence_len)
     train_data_iterator = data.DataLoader(training_set, **data_params)
 
     

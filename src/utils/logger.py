@@ -12,21 +12,24 @@ LOGGING_LEVELS = {
     "critical": logging.CRITICAL,
 }
 
-
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):
-        super(CustomJsonFormatter, self).add_fields(
-            log_record, record, message_dict
-        )
+        super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
+        
+        # افزودن timestamp در صورت عدم وجود
         if not log_record.get("timestamp"):
-            # this doesn't use record.created, so it is slightly off
             now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             log_record["timestamp"] = now
+        
+        # تنظیم سطح لاگ به حروف بزرگ
         if log_record.get("level"):
             log_record["level"] = log_record["level"].upper()
         else:
             log_record["level"] = record.levelname
-
+        
+        # افزودن نام لاگر
+        if not log_record.get("name"):
+            log_record["name"] = record.name
 
 class Logger:
     name = ""
@@ -45,7 +48,7 @@ class Logger:
 
         if json_formatter:
             logger_format = CustomJsonFormatter(
-                "(timestamp) (level) (name) (message)"
+               fmt='%(timestamp)s %(level)s %(name)s %(message)s'
             )
         elif isinstance(logger_format, str):
             logger_format = logging.Formatter(logger_format)
@@ -83,6 +86,7 @@ def debug(message, extra={}):
 
 
 def info(message, extra={}):
+    print(message)
     Logger.logger.info(message, extra=extra)
 
 

@@ -11,7 +11,7 @@ import torch.optim as optim
 from torch.utils import data
 import json
 
-import src.utils.logger as logger
+import  utils.logger as logger
 
 
 class LyricsNGramsDataset(data.Dataset):
@@ -236,7 +236,7 @@ def main():
     logger.info("Using {} device".format(device))
 
     # Dataloader params
-    data_params = {'batch_size': 20000,
+    data_params = {'batch_size': 2000,
                    'shuffle': True,
                    'num_workers': 4}
     logger.info("Data Parameters used are: {}".format(data_params))
@@ -250,7 +250,7 @@ def main():
 
     # Training params
     start_epoch = 0
-    epochs = 50000
+    epochs = 50
     loss_threshold = 0.001
     learning_rate = 0.001
     logger.info("Training Parameters are: Epochs-{}, LossThreshold-{}, LearningRate-{}".format(epochs, loss_threshold, learning_rate))
