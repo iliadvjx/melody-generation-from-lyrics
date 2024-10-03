@@ -355,38 +355,38 @@ def train_conditional_gan(train_data_iterator, generator, discriminator, optimiz
 
         print("Loss while training generator is: {}".format(total_G_loss))
 
-        logger.info("Loss is : {}".format(total_loss))
+    #     logger.info("Loss is : {}".format(total_loss))
         
-        if (epoch + 1) % print_every == 0:
-            print("Loss is : {}".format(total_loss))
+    #     if (epoch + 1) % print_every == 0:
+    #         print("Loss is : {}".format(total_loss))
 
-        if (epoch + 1) % save_every == 0:
-            loss_change = prev_loss - total_loss
-            logger.info(
-                "Change in loss after {} epochs is: {}".format(save_every,
-                                                               loss_change))
-            if loss_change > 0:
-                is_best = True
-            if loss_change < loss_threshold:
-                to_break = True
+    #     if (epoch + 1) % save_every == 0:
+    #         loss_change = prev_loss - total_loss
+    #         logger.info(
+    #             "Change in loss after {} epochs is: {}".format(save_every,
+    #                                                            loss_change))
+    #         if loss_change > 0:
+    #             is_best = True
+    #         if loss_change < loss_threshold:
+    #             to_break = True
         
-            prev_loss = total_loss
+    #         prev_loss = total_loss
         
-            logger.info("Creating checkpoint at epoch {}".format(epoch + 1))
-            checkpoint = {
-                'epoch': epoch + 1,
-                'state_dict': model.state_dict(),
-                'optimizer': optimizer.state_dict()
-            }
-            save_checkpoint(checkpoint, is_best, checkpoint_dir, model_dir)
-            logger.info("Checkpoint created")
+    #         logger.info("Creating checkpoint at epoch {}".format(epoch + 1))
+    #         checkpoint = {
+    #             'epoch': epoch + 1,
+    #             'state_dict': model.state_dict(),
+    #             'optimizer': optimizer.state_dict()
+    #         }
+    #         save_checkpoint(checkpoint, is_best, checkpoint_dir, model_dir)
+    #         logger.info("Checkpoint created")
 
-        if to_break:
-            logger.info(
-                "Change in loss is less than the threshold. Stopping training")
-            break
+    #     if to_break:
+    #         logger.info(
+    #             "Change in loss is less than the threshold. Stopping training")
+    #         break
 
-    logger.info("Completed Training")
+    # logger.info("Completed Training")
 
 
 if __name__ == '__main__':
@@ -432,7 +432,7 @@ if __name__ == '__main__':
 
     criterion = LossCompute()
     start_epoch = 0
-    epochs = 50
+    epochs = 100
     train_D_steps = 1
     train_G_steps = 1
 
