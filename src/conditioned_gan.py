@@ -445,7 +445,7 @@ if __name__ == '__main__':
     discriminator_input_dim = embed_dim + generator_out_dim
     discriminator_out_dim = 1
     
-    generator = GeneratorLSTM(lyrics_dim, ff1_out, hidden_dim, generator_out_dim)
+    generator = GeneratorLSTM(embed_dim, ff1_out, hidden_dim, generator_out_dim)
     discriminator = DiscriminatorLSTM(discriminator_input_dim, hidden_dim, discriminator_out_dim)
     
     generator = generator.to(device)
