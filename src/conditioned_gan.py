@@ -166,44 +166,66 @@ class Dataloader(data.Dataset):
         return lyrics_seq, cont_val_seq, discrete_val_seq, noise_seq
 
 
+# class GeneratorLSTM(nn.Module):
+#     def __init__(self, embed_dim, ff1_out, hidden_dim, out_dim):
+#         super(GeneratorLSTM, self).__init__()
+
+#         self.input_ff = nn.Linear(embed_dim, ff1_out)
+#         self.lstm = nn.LSTM(ff1_out, hidden_dim, num_layers=2)
+#         self.output_ff = nn.Linear(ff1_out, out_dim)
+
+#     def forward(self, lyrics, noise):
+#         """
+#         Define forward pass
+#         1. Pass input (50 dim) through FF1 layer to explode the dimension
+#         2. Pass the entire sequence through
+#         :return:
+#         """
+#         # print("Input size {}".format(lyrics.shape))
+#         # Reshaping input is not required.
+#         # pytorch automatically applys the linear layer to only the last dimension!
+        
+        
+# #         print("Shape of input lyrics is: {}".format(lyrics.shape))
+# #         print("Shape of noise is: {}".format(noise.shape))
+#         concat_lyrics = torch.cat((lyrics, noise), 2)
+# #         print("Concat Shape: {}".format(concat_lyrics.shape))
+#         out1 = F.relu(self.input_ff(concat_lyrics))
+#         # print("Output size of first layer {}".format(out1.shape))
+#         # print(out1.shape)
+#         # lstm_out, _ = self.lstm(out1)
+#         # The input to LSTM needs to be reshaped.
+#         lstm_out, _ = self.lstm(out1.view(out1.shape[1], out1.shape[0], -1))
+#         # print(lstm_out.shape)
+
+#         tag = self.output_ff(lstm_out.view(lstm_out.shape[1], lstm_out.shape[0], -1))
+#         # print(tag.shape)
+
+#         # print(tag)
+#         return tag
 class GeneratorLSTM(nn.Module):
     def __init__(self, embed_dim, ff1_out, hidden_dim, out_dim):
         super(GeneratorLSTM, self).__init__()
 
-        self.input_ff = nn.Linear(embed_dim, ff1_out)
+        # Update input dimension to embed_dim * 2
+        self.input_ff = nn.Linear(embed_dim * 2, ff1_out)
         self.lstm = nn.LSTM(ff1_out, hidden_dim, num_layers=2)
-        self.output_ff = nn.Linear(ff1_out, out_dim)
+        self.output_ff = nn.Linear(hidden_dim, out_dim)
 
     def forward(self, lyrics, noise):
-        """
-        Define forward pass
-        1. Pass input (50 dim) through FF1 layer to explode the dimension
-        2. Pass the entire sequence through
-        :return:
-        """
-        # print("Input size {}".format(lyrics.shape))
-        # Reshaping input is not required.
-        # pytorch automatically applys the linear layer to only the last dimension!
-        
-        
-#         print("Shape of input lyrics is: {}".format(lyrics.shape))
-#         print("Shape of noise is: {}".format(noise.shape))
         concat_lyrics = torch.cat((lyrics, noise), 2)
-#         print("Concat Shape: {}".format(concat_lyrics.shape))
         out1 = F.relu(self.input_ff(concat_lyrics))
-        # print("Output size of first layer {}".format(out1.shape))
-        # print(out1.shape)
-        # lstm_out, _ = self.lstm(out1)
-        # The input to LSTM needs to be reshaped.
-        lstm_out, _ = self.lstm(out1.view(out1.shape[1], out1.shape[0], -1))
-        # print(lstm_out.shape)
 
-        tag = self.output_ff(lstm_out.view(lstm_out.shape[1], lstm_out.shape[0], -1))
-        # print(tag.shape)
+        # LSTM expects input of shape (seq_len, batch_size, input_size)
+        out1 = out1.permute(1, 0, 2)
+        lstm_out, _ = self.lstm(out1)
 
-        # print(tag)
+        # Pass LSTM output through output_ff
+        tag = self.output_ff(lstm_out)
+
+        # Optional: permute back to (batch_size, seq_len, out_dim)
+        tag = tag.permute(1, 0, 2)
         return tag
-
 
 class DiscriminatorLSTM(nn.Module):
     def __init__(self, input_dim, hidden_dim, out_dim):
@@ -406,7 +428,7 @@ if __name__ == '__main__':
     
 #     device = 'cpu'
     
-    data_params = {'batch_size': 100,
+    data_params = {'batch_size': 256,
                    'shuffle': True,
                    'num_workers': 6}
 
@@ -442,7 +464,7 @@ if __name__ == '__main__':
 
     criterion = LossCompute()
     start_epoch = 0
-    epochs = 100
+    epochs = 2000
     train_D_steps = 1
     train_G_steps = 1
     current_dir = os.getcwd()

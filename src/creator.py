@@ -47,7 +47,7 @@ for x in cond:
         flattened_cond.append(y)
 
 #/kaggle/working/melody-generation-from-lyrics/model/generator_epoch_100.pt
-model_path = os.path.join(current_dir,'./model/generator_epoch_100_tr.pt' ) 
+model_path = os.path.join(current_dir,'./model/generator_epoch_100.pt' ) 
 # model_path = os.path.join(current_dir,'./data/model_checkpoint/gan_checkpoint_50.pth' ) 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 checkpoint = torch.load(model_path, map_location=device)
@@ -86,22 +86,22 @@ num_layers = 2   # Number of transformer layers
 num_heads = 1    # Number of attention heads
 
 # Initialize the model
-generator = GeneratorTransformer(
-    embed_dim=embed_dim, 
-    ff1_out=ff1_out, 
-    hidden_dim=hidden_dim, 
-    out_dim=out_dim, 
-    num_layers=num_layers, 
-    num_heads=num_heads
-)
-# generator = GeneratorLSTM(
+# generator = GeneratorTransformer(
 #     embed_dim=embed_dim, 
 #     ff1_out=ff1_out, 
 #     hidden_dim=hidden_dim, 
 #     out_dim=out_dim, 
-#     # num_layers=num_layers, 
-#     # num_heads=num_heads
+#     num_layers=num_layers, 
+#     num_heads=num_heads
 # )
+generator = GeneratorLSTM(
+    embed_dim=embed_dim, 
+    ff1_out=ff1_out, 
+    hidden_dim=hidden_dim, 
+    out_dim=out_dim, 
+    # num_layers=num_layers, 
+    # num_heads=num_heads
+)
 # print(torch.load(model_path, map_location=device))
 generator.load_state_dict(torch.load(model_path, map_location=device))
 generator.to(device)
@@ -131,7 +131,8 @@ with torch.no_grad():
     generated_features = generated_features.cpu().numpy()  # Convert to NumPy array
 
 # Process the generated features
-sample = [x[0, :] for x in generated_features]
+# sample = [x[0, :] for x in generated_features]
+sample = generated_features[0]
 sample = midi_statistics.tune_song(utils.discretize(sample))
 print(generated_features)
 print(sample)

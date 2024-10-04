@@ -353,7 +353,7 @@ if __name__ == '__main__':
 
     criterion = LossCompute()
     start_epoch = 0
-    epochs = 1000
+    epochs = 2000
     train_D_steps = 1
     train_G_steps = 1
     # print("GENERATOR",generator)
