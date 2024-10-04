@@ -2,6 +2,7 @@ import os
 import numpy as np
 import torch
 import torch.nn as nn
+from conditioned_gan import GeneratorLSTM
 from utils import midi_statistics
 from utils import utils
 from gan2 import GeneratorTransformer
@@ -45,8 +46,8 @@ for x in cond:
     for y in x:
         flattened_cond.append(y)
 
-
-model_path = os.path.join(current_dir,'./model/generator_epoch_50.pt' ) 
+#/kaggle/working/melody-generation-from-lyrics/model/generator_epoch_100.pt
+model_path = os.path.join(current_dir,'./model/generator_epoch_100_tr.pt' ) 
 # model_path = os.path.join(current_dir,'./data/model_checkpoint/gan_checkpoint_50.pth' ) 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 checkpoint = torch.load(model_path, map_location=device)
@@ -93,6 +94,14 @@ generator = GeneratorTransformer(
     num_layers=num_layers, 
     num_heads=num_heads
 )
+# generator = GeneratorLSTM(
+#     embed_dim=embed_dim, 
+#     ff1_out=ff1_out, 
+#     hidden_dim=hidden_dim, 
+#     out_dim=out_dim, 
+#     # num_layers=num_layers, 
+#     # num_heads=num_heads
+# )
 # print(torch.load(model_path, map_location=device))
 generator.load_state_dict(torch.load(model_path, map_location=device))
 generator.to(device)

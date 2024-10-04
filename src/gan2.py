@@ -325,7 +325,7 @@ if __name__ == '__main__':
     use_cuda = torch.cuda.is_available()
     device = torch.device('cuda:0' if use_cuda else 'cpu')
     print("DEVICE: " ,device)
-    data_params = {'batch_size': 100, 'shuffle': True, 'num_workers': 6}
+    data_params = {'batch_size': 256, 'shuffle': True, 'num_workers': 6}
     learning_rate_G = 0.0001
     learning_rate_D = 0.0001
 
@@ -353,7 +353,7 @@ if __name__ == '__main__':
 
     criterion = LossCompute()
     start_epoch = 0
-    epochs = 100
+    epochs = 1000
     train_D_steps = 1
     train_G_steps = 1
     # print("GENERATOR",generator)
@@ -368,4 +368,4 @@ if __name__ == '__main__':
     full_path = os.path.abspath(os.path.join(current_dir, relative_path))
     model_path = os.path.abspath(os.path.join(current_dir, './model'))
     print(full_path, model_path)
-    train_conditional_gan(train_data_iterator, generator, discriminator, optimizer_G, optimizer_D, criterion, start_epoch, epochs, 'loss_threshold', device, full_path, model_path, 10, 10, train_D_steps, train_G_steps)
+    train_conditional_gan(train_data_iterator, generator, discriminator, optimizer_G, optimizer_D, criterion, start_epoch, epochs, 'loss_threshold', device, full_path, model_path, 100, 10, train_D_steps, train_G_steps)
