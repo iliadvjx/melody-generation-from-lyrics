@@ -206,11 +206,12 @@ class Dataloader(data.Dataset):
 class GeneratorLSTM(nn.Module):
     def __init__(self, embed_dim, ff1_out, hidden_dim, out_dim):
         super(GeneratorLSTM, self).__init__()
-
-        # Update input dimension to embed_dim * 2
+        
+        # Accept concatenated input dimension
         self.input_ff = nn.Linear(embed_dim * 2, ff1_out)
         self.lstm = nn.LSTM(ff1_out, hidden_dim, num_layers=2)
         self.output_ff = nn.Linear(hidden_dim, out_dim)
+
 
     def forward(self, lyrics, noise):
         concat_lyrics = torch.cat((lyrics, noise), 2)
