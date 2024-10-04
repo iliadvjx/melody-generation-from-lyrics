@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from pathlib import Path
 from datetime import date
@@ -355,38 +356,47 @@ def train_conditional_gan(train_data_iterator, generator, discriminator, optimiz
 
         print("Loss while training generator is: {}".format(total_G_loss))
 
-    #     logger.info("Loss is : {}".format(total_loss))
-        
-    #     if (epoch + 1) % print_every == 0:
-    #         print("Loss is : {}".format(total_loss))
+  # Train Generator
+        total_G_loss = 0
+        for num_steps_G, data in enumerate(train_data_iterator):
+            lyrics_seq, cont_val_seq, discrete_val_seq, noise_seq = [d.to(device) for d in data]
 
-    #     if (epoch + 1) % save_every == 0:
-    #         loss_change = prev_loss - total_loss
-    #         logger.info(
-    #             "Change in loss after {} epochs is: {}".format(save_every,
-    #                                                            loss_change))
-    #         if loss_change > 0:
-    #             is_best = True
-    #         if loss_change < loss_threshold:
-    #             to_break = True
-        
-    #         prev_loss = total_loss
-        
-    #         logger.info("Creating checkpoint at epoch {}".format(epoch + 1))
-    #         checkpoint = {
-    #             'epoch': epoch + 1,
-    #             'state_dict': model.state_dict(),
-    #             'optimizer': optimizer.state_dict()
-    #         }
-    #         save_checkpoint(checkpoint, is_best, checkpoint_dir, model_dir)
-    #         logger.info("Checkpoint created")
+            optimizer_G.zero_grad()
 
-    #     if to_break:
-    #         logger.info(
-    #             "Change in loss is less than the threshold. Stopping training")
-    #         break
+            fake_G_out = generator(lyrics_seq, noise_seq)
+            fake_D_out = discriminator(fake_G_out, lyrics_seq)
+            true_val = ones_target(fake_D_out.shape).to(device)
+            fake_G_loss = criterion(fake_D_out, true_val)
+            fake_G_loss.backward()
+            optimizer_G.step()
 
-    # logger.info("Completed Training")
+            total_G_loss += fake_G_loss.item()
+
+            if num_steps_G == train_G_steps:
+                break
+
+        losses_G.append(total_G_loss)
+        print("EPOCH: {} | Loss while training generator is: {}".format(epoch, total_G_loss))
+
+        # Save checkpoints if needed
+        if (epoch + 1) % save_every == 0:
+            checkpoint = {
+                'epoch': epoch + 1,
+                'generator_state_dict': generator.state_dict(),
+                'discriminator_state_dict': discriminator.state_dict(),
+                'optimizer_G_state_dict': optimizer_G.state_dict(),
+                'optimizer_D_state_dict': optimizer_D.state_dict(),
+            }
+            torch.save(checkpoint, f'{checkpoint_dir}/gan_checkpoint_{epoch + 1}.pth')
+            print(f"Checkpoint saved at epoch {epoch + 1}")
+            
+            checkpoint_path_G = os.path.join(model_dir, f'generator_epoch_{epoch + 1}.pt')
+            checkpoint_path_D = os.path.join(model_dir, f'discriminator_epoch_{epoch + 1}.pt')
+
+            torch.save(generator.state_dict(), checkpoint_path_G)
+            torch.save(discriminator.state_dict(), checkpoint_path_D)
+
+            print(f"Model checkpoints saved at epoch {epoch + 1}")
 
 
 if __name__ == '__main__':
@@ -435,11 +445,20 @@ if __name__ == '__main__':
     epochs = 100
     train_D_steps = 1
     train_G_steps = 1
+    current_dir = os.getcwd()
 
+# Define the relative path
+    relative_path = './data/model_checkpoint'
+
+# Join the current directory with the relative path
+    full_path = os.path.abspath(os.path.join(current_dir, relative_path))
+    model_path = os.path.abspath(os.path.join(current_dir, './model'))
+    print(full_path, model_path)
+    
     train_conditional_gan(train_data_iterator, generator, discriminator,
                           optimizer_G, optimizer_D, criterion, start_epoch,
-                          epochs, 'loss_threshold', device, 'checkpoint_dir',
-                          'model_dir', 'save_every', 'print_every', train_D_steps,
+                          epochs, 'loss_threshold', device, full_path,
+                         model_path,  10, 10, train_D_steps,
                           train_G_steps)
 
     # for i, data in enumerate(train_data_iterator):
