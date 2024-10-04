@@ -250,7 +250,7 @@ def main():
 
     # Training params
     start_epoch = 0
-    epochs = 650
+    epochs = 622
     loss_threshold = 0.001
     learning_rate = 0.001
     logger.info("Training Parameters are: Epochs-{}, LossThreshold-{}, LearningRate-{}".format(epochs, loss_threshold, learning_rate))
