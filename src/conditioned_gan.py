@@ -215,16 +215,10 @@ class GeneratorLSTM(nn.Module):
     def forward(self, lyrics, noise):
         concat_lyrics = torch.cat((lyrics, noise), 2)
         out1 = F.relu(self.input_ff(concat_lyrics))
-
-        # LSTM expects input of shape (seq_len, batch_size, input_size)
-        out1 = out1.permute(1, 0, 2)
+        out1 = out1.permute(1, 0, 2)  # Adjust for LSTM input
         lstm_out, _ = self.lstm(out1)
-
-        # Pass LSTM output through output_ff
+        lstm_out = lstm_out.permute(1, 0, 2)
         tag = self.output_ff(lstm_out)
-
-        # Optional: permute back to (batch_size, seq_len, out_dim)
-        tag = tag.permute(1, 0, 2)
         return tag
 
 class DiscriminatorLSTM(nn.Module):
@@ -480,7 +474,7 @@ if __name__ == '__main__':
     train_conditional_gan(train_data_iterator, generator, discriminator,
                           optimizer_G, optimizer_D, criterion, start_epoch,
                           epochs, 'loss_threshold', device, full_path,
-                         model_path,  10, 10, train_D_steps,
+                         model_path,  200, 200, train_D_steps,
                           train_G_steps)
 
     # for i, data in enumerate(train_data_iterator):
