@@ -330,7 +330,7 @@ if __name__ == '__main__':
     learning_rate_D = 0.0001
 
     sequence_len = 20
-    training_set = Dataloader('2024-09-05_embeddings_vector.pt', '2024-09-05_vocabulary_lookup.json', sequence_len)
+    training_set = Dataloader('2024-10-04_embeddings_vector.pt', '2024-10-04_vocabulary_lookup.json', sequence_len)
     train_data_iterator = data.DataLoader(training_set, **data_params)
 
     embed_dim = 128
